@@ -1,3 +1,74 @@
+/* Dark mode toggle styles */
+.dark-mode {
+  background: linear-gradient(135deg, #263238 0%, #37474f 100%);
+  color: #e3f2fd;
+}
+.dark-mode .container {
+  background: #263238;
+  box-shadow: 0 4px 24px #000a;
+}
+.dark-mode h1 {
+  color: #90caf9;
+}
+.dark-mode h2 {
+  color: #64b5f6;
+}
+.dark-mode .list li {
+  background: #37474f;
+  box-shadow: 0 1px 4px #263238;
+  color: #e3f2fd;
+}
+.dark-mode .team {
+  background: linear-gradient(135deg, #37474f 60%, #263238 100%);
+  box-shadow: 0 2px 12px #000a;
+  border-color: #90caf9;
+}
+.dark-mode .team strong {
+  color: #90caf9;
+}
+.dark-mode .team ul li {
+  background: #263238;
+  border: 1px solid #90caf9;
+  color: #e3f2fd;
+}
+.dark-mode .team.on-clock ul li {
+  background: #37474f;
+}
+.dark-mode .tag {
+  background: #263238;
+  color: #90caf9;
+}
+.dark-mode button {
+  background: linear-gradient(90deg, #1565c0 60%, #42a5f5 100%);
+  color: #fff;
+}
+.dark-mode input, .dark-mode textarea {
+  background: #37474f;
+  color: #e3f2fd;
+  border: 1px solid #90caf9;
+}
+.dark-mode label {
+  color: #90caf9;
+}
+
+/* Team avatar styles */
+.team-avatar {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 1.5em;
+  text-align: center;
+  line-height: 32px;
+  margin-right: 8px;
+  box-shadow: 0 1px 4px #bbdefb;
+  vertical-align: middle;
+}
+.dark-mode .team-avatar {
+  background: #263238;
+  box-shadow: 0 1px 4px #000a;
+}
 
 .google-font {
   font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;

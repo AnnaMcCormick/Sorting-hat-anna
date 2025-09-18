@@ -1,3 +1,13 @@
+// Dark mode toggle
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+darkModeToggle.onclick = () => {
+  document.body.classList.toggle('dark-mode');
+  darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+};
+
+// Team avatars (emoji assignment)
+const teamEmojis = ['🦁','🦉','🐍','🦡','🐯','🦊','🐸','🐻','🐧','🐬'];
+
 // Draft Pick Application Script
 let teams = [];
 let people = [];
@@ -164,8 +174,9 @@ function renderDraftBoard() {
   teamRosters.forEach((roster, idx) => {
     const div = document.createElement('div');
     div.className = 'team' + (currentTeamIdx === idx ? ' on-clock' : '');
-    div.style.border = currentTeamIdx === idx ? '2px solid #1976d2' : '';
-    div.innerHTML = `<strong>${teams[idx]}</strong><ul>${roster.map(pObj => `<li style='background:${currentTeamIdx === idx ? '#bbdefb' : '#fff'};border:1px solid #bbb;margin:2px 0;padding:2px 6px;border-radius:3px;'>${typeof pObj === 'string' ? pObj : pObj.name}${pObj.tag ? ` <span style='color:#1976d2;font-size:0.9em;'>[${pObj.tag}]</span>` : ''}</li>`).join('')}</ul>`;
+    div.style.setProperty('--team-color', getTeamColor(idx));
+    const avatar = `<span class='team-avatar'>${teamEmojis[idx % teamEmojis.length]}</span>`;
+    div.innerHTML = `${avatar}<strong>${teams[idx]}</strong><ul>${roster.map(pObj => `<li>${typeof pObj === 'string' ? pObj : pObj.name}${pObj.tag ? ` <span class='tag'>[${pObj.tag}]</span>` : ''}</li>`).join('')}</ul>`;
     draftBoard.appendChild(div);
   });
 }
@@ -186,9 +197,19 @@ function renderResultsBoard() {
   teamRosters.forEach((roster, idx) => {
     const div = document.createElement('div');
     div.className = 'team';
-    div.innerHTML = `<strong>${teams[idx]}</strong><ul>${roster.map(pObj => `<li style='background:#fff;border:1px solid #bbb;margin:2px 0;padding:2px 6px;border-radius:3px;'>${typeof pObj === 'string' ? pObj : pObj.name}${pObj.tag ? ` <span style='color:#1976d2;font-size:0.9em;'>[${pObj.tag}]</span>` : ''}</li>`).join('')}</ul>`;
+    div.style.setProperty('--team-color', getTeamColor(idx));
+    const avatar = `<span class='team-avatar'>${teamEmojis[idx % teamEmojis.length]}</span>`;
+    div.innerHTML = `${avatar}<strong>${teams[idx]}</strong><ul>${roster.map(pObj => `<li>${typeof pObj === 'string' ? pObj : pObj.name}${pObj.tag ? ` <span class='tag'>[${pObj.tag}]</span>` : ''}</li>`).join('')}</ul>`;
     resultsBoard.appendChild(div);
   });
+// Team color assignment (pastel palette)
+function getTeamColor(idx) {
+  const colors = [
+    '#ffe082', '#b2ff59', '#80d8ff', '#ff80ab', '#ffd180',
+    '#ea80fc', '#a7ffeb', '#ffff8d', '#ff9e80', '#cfd8dc'
+  ];
+  return colors[idx % colors.length];
+}
 }
 teamForm.onsubmit = e => {
   e.preventDefault();
