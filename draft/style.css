@@ -51,6 +51,18 @@
   color: #90caf9;
 }
 
+.dark-mode .how-to {
+  background: #37474f !important;
+  color: #e3f2fd !important;
+  border-radius: 6px;
+}
+.dark-mode .how-to strong {
+  color: #90caf9 !important;
+}
+.dark-mode .how-to ul li {
+  color: #e3f2fd !important;
+}
+
 /* Team avatar styles */
 .team-avatar {
   display: inline-block;
