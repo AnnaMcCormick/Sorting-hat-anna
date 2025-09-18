@@ -1,0 +1,39 @@
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7f7; margin: 0; }
+.container { max-width: 700px; margin: 2rem auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #ccc; padding: 2rem; }
+h1, h2 { text-align: center; }
+.hidden { display: none; }
+.flex { display: flex; gap: 1rem; }
+.list { margin: 1rem 0; padding: 0; list-style: none; }
+.list li { background: #eee; margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+button { margin-left: 0.5rem; }
+.team-board { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+.team { background: #e3f2fd; border-radius: 6px; padding: 1rem; min-width: 150px; transition: border 0.2s; }
+.team.on-clock { border: 2px solid #1976d2; box-shadow: 0 0 8px #1976d244; }
+.team strong { font-size: 1.1em; }
+.team ul { padding: 0; margin: 0.5em 0 0 0; }
+.team ul li {
+  background: #fff;
+  border: 1px solid #bbb;
+  margin: 2px 0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+.team.on-clock ul li {
+  background: #bbdefb;
+}
+.tag {
+  color: #1976d2;
+  font-size: 0.9em;
+  margin-left: 6px;
+  background: #e3f2fd;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+.progress { text-align: center; margin: 1rem 0; font-weight: bold; }
+@media (max-width: 600px) {
+  .container { padding: 1rem; }
+  .team-board { flex-direction: column; align-items: stretch; }
+}
