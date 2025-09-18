@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Draft Pick Application</title>
+		<link rel="stylesheet" href="style.css">
+</head>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draft Pick Application</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <button id="dark-mode-toggle" style="position:fixed;top:18px;right:18px;z-index:10;padding:0.5em 1em;">🌙 Dark Mode</button>
+  <div class="container">
+    <h1>Draft Pick Application</h1>
+  <div class="how-to" style="margin-bottom:1rem; background:#e3f2fd; border-radius:6px; padding:1rem;">
+      <strong>How to use:</strong>
+      <ul>
+        <li>Add teams and participants (individually or in bulk).</li>
+        <li>Click <b>Start Draft</b> to begin.</li>
+        <li>Use <b>Next Pick</b> or <b>Auto Draft</b> to assign participants.</li>
+        <li>View results and restart as needed.</li>
+      </ul>
+    </div>
+    <!-- Setup Phase -->
+    <section id="setup-phase">
+      <h2>Setup</h2>
+      <div class="flex">
+        <div style="flex:1">
+          <h3>Teams</h3>
+          <form id="team-form">
+            <input type="text" id="team-name" placeholder="Team name" required>
+            <button type="submit">Add Team</button>
+          </form>
+          <ul id="team-list" class="list"></ul>
+        </div>
+        <div style="flex:1">
+          <h3>Participants</h3>
+          <form id="person-form">
+            <input type="text" id="person-name" placeholder="Participant name" autocomplete="off" list="deleted-names">
+            <input type="text" id="person-tag" placeholder="Tag/Skill (optional)">
+            <button type="submit">Add Participant</button>
+          </form>
+          <button id="bulk-add-btn" style="margin-top:0.5rem;">Bulk Add</button>
+          <div id="bulk-add-area" class="hidden" style="margin-top:0.5rem;">
+            <textarea id="bulk-names" rows="4" style="width:100%;" placeholder="Paste names, one per line or comma-separated"></textarea>
+            <button id="bulk-submit">Add All</button>
+            <button id="bulk-cancel" type="button">Cancel</button>
+          </div>
+          <datalist id="deleted-names"></datalist>
+          <ul id="person-list" class="list"></ul>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button id="start-draft">Start Draft</button>
+        <div id="setup-error" style="color:red; margin-top:0.5rem;"></div>
+      </div>
+    </section>
+
+    <!-- Draft Phase -->
+    <section id="draft-phase" class="hidden">
+      <h2>Draft Board</h2>
+      <div class="progress" id="draft-progress"></div>
+      <div class="team-board" id="draft-board"></div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button id="next-pick">Next Pick</button>
+        <button id="auto-draft-btn" style="margin-left:1rem;">Auto Draft</button>
+        <div id="draft-error" style="color:red; margin-top:0.5rem;"></div>
+      </div>
+      <div style="text-align:center; margin-top:1rem;">
+        <h3>Remaining Participants</h3>
+        <ul id="remaining-list" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- Results Phase -->
+    <section id="results-phase" class="hidden">
+      <h2>Final Team Rosters</h2>
+      <div class="team-board" id="results-board"></div>
+      <div style="text-align:center; margin-top:1rem;">
+        <button id="restart">Restart Draft</button>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
