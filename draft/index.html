@@ -4,23 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Draft Pick Application</title>
-	<style>
-		body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7f7; margin: 0; }
-		.container { max-width: 700px; margin: 2rem auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #ccc; padding: 2rem; }
-		h1, h2 { text-align: center; }
-		.hidden { display: none; }
-		.flex { display: flex; gap: 1rem; }
-		.list { margin: 1rem 0; padding: 0; list-style: none; }
-		.list li { background: #eee; margin-bottom: 0.5rem; padding: 0.5rem 1rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-		button { margin-left: 0.5rem; }
-		.team-board { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
-		.team { background: #e3f2fd; border-radius: 6px; padding: 1rem; min-width: 150px; }
-		.progress { text-align: center; margin: 1rem 0; }
-		@media (max-width: 600px) {
-			.container { padding: 1rem; }
-			.team-board { flex-direction: column; align-items: stretch; }
-		}
-	</style>
+		<link rel="stylesheet" href="style.css">
 </head>
 <body>
 	<div class="container">
@@ -38,12 +22,20 @@
 					<ul id="team-list" class="list"></ul>
 				</div>
 				<div style="flex:1">
-					<h3>Participants</h3>
-					<form id="person-form">
-						<input type="text" id="person-name" placeholder="Participant name" required>
-						<button type="submit">Add Participant</button>
-					</form>
-					<ul id="person-list" class="list"></ul>
+								<h3>Participants</h3>
+								<form id="person-form">
+									<input type="text" id="person-name" placeholder="Participant name" autocomplete="off" list="deleted-names">
+									<input type="text" id="person-tag" placeholder="Tag/Skill (optional)">
+									<button type="submit">Add Participant</button>
+								</form>
+								<button id="bulk-add-btn" style="margin-top:0.5rem;">Bulk Add</button>
+								<div id="bulk-add-area" class="hidden" style="margin-top:0.5rem;">
+									<textarea id="bulk-names" rows="4" style="width:100%;" placeholder="Paste names, one per line or comma-separated"></textarea>
+									<button id="bulk-submit">Add All</button>
+									<button id="bulk-cancel" type="button">Cancel</button>
+								</div>
+								<datalist id="deleted-names"></datalist>
+								<ul id="person-list" class="list"></ul>
 				</div>
 			</div>
 			<div style="text-align:center; margin-top:1rem;">
@@ -56,11 +48,12 @@
 		<section id="draft-phase" class="hidden">
 			<h2>Draft Board</h2>
 			<div class="progress" id="draft-progress"></div>
-			<div class="team-board" id="draft-board"></div>
-			<div style="text-align:center; margin-top:1rem;">
-				<button id="next-pick">Next Pick</button>
-				<div id="draft-error" style="color:red; margin-top:0.5rem;"></div>
-			</div>
+					<div class="team-board" id="draft-board"></div>
+					<div style="text-align:center; margin-top:1rem;">
+						<button id="next-pick">Next Pick</button>
+						<button id="auto-draft-btn" style="margin-left:1rem;">Auto Draft</button>
+						<div id="draft-error" style="color:red; margin-top:0.5rem;"></div>
+					</div>
 			<div style="text-align:center; margin-top:1rem;">
 				<h3>Remaining Participants</h3>
 				<ul id="remaining-list" class="list"></ul>
@@ -76,245 +69,6 @@
 			</div>
 		</section>
 	</div>
-	<script>
-		// State
-		let teams = [];
-		let people = [];
-		let draftOrder = [];
-		let teamRosters = [];
-		let draftRound = 0;
-		let currentTeamIdx = 0;
-		let remaining = [];
-		let distribution = [];
-		let picksMade = 0;
-
-		// DOM Elements
-		const setupPhase = document.getElementById('setup-phase');
-		const draftPhase = document.getElementById('draft-phase');
-		const resultsPhase = document.getElementById('results-phase');
-		const teamForm = document.getElementById('team-form');
-		const teamNameInput = document.getElementById('team-name');
-		const teamList = document.getElementById('team-list');
-		const personForm = document.getElementById('person-form');
-		const personNameInput = document.getElementById('person-name');
-		const personList = document.getElementById('person-list');
-		const startDraftBtn = document.getElementById('start-draft');
-		const setupError = document.getElementById('setup-error');
-		const draftProgress = document.getElementById('draft-progress');
-		const draftBoard = document.getElementById('draft-board');
-		const nextPickBtn = document.getElementById('next-pick');
-		const draftError = document.getElementById('draft-error');
-		const remainingList = document.getElementById('remaining-list');
-		const resultsBoard = document.getElementById('results-board');
-		const restartBtn = document.getElementById('restart');
-
-		// Utility
-		function renderTeams() {
-			teamList.innerHTML = '';
-			teams.forEach((team, idx) => {
-				const li = document.createElement('li');
-				li.textContent = team;
-				const editBtn = document.createElement('button');
-				editBtn.textContent = 'Edit';
-				editBtn.onclick = () => {
-					const newName = prompt('Edit team name:', team);
-					if (newName && newName.trim()) {
-						teams[idx] = newName.trim();
-						renderTeams();
-					}
-				};
-				const delBtn = document.createElement('button');
-				delBtn.textContent = 'Delete';
-				delBtn.onclick = () => {
-					teams.splice(idx, 1);
-					renderTeams();
-				};
-				li.appendChild(editBtn);
-				li.appendChild(delBtn);
-				teamList.appendChild(li);
-			});
-		}
-		function renderPeople() {
-			personList.innerHTML = '';
-			people.forEach((person, idx) => {
-				const li = document.createElement('li');
-				li.textContent = person;
-				const editBtn = document.createElement('button');
-				editBtn.textContent = 'Edit';
-				editBtn.onclick = () => {
-					const newName = prompt('Edit participant name:', person);
-					if (newName && newName.trim()) {
-						people[idx] = newName.trim();
-						renderPeople();
-					}
-				};
-				const delBtn = document.createElement('button');
-				delBtn.textContent = 'Delete';
-				delBtn.onclick = () => {
-					people.splice(idx, 1);
-					renderPeople();
-				};
-				li.appendChild(editBtn);
-				li.appendChild(delBtn);
-				personList.appendChild(li);
-			});
-		}
-		function validateSetup() {
-			if (teams.length < 2) return 'At least 2 teams required.';
-			if (people.length < 2) return 'At least 2 participants required.';
-			return '';
-		}
-		function shuffle(arr) {
-			for (let i = arr.length - 1; i > 0; i--) {
-				const j = Math.floor(Math.random() * (i + 1));
-				[arr[i], arr[j]] = [arr[j], arr[i]];
-			}
-			return arr;
-		}
-		function calculateDistribution(numPeople, numTeams) {
-			const base = Math.floor(numPeople / numTeams);
-			const remainder = numPeople % numTeams;
-			const dist = Array(numTeams).fill(base);
-			for (let i = 0; i < remainder; i++) dist[i]++;
-			return dist;
-		}
-		function renderDraftBoard() {
-			draftBoard.innerHTML = '';
-			teamRosters.forEach((roster, idx) => {
-				const div = document.createElement('div');
-				div.className = 'team';
-				div.innerHTML = `<strong>${teams[idx]}</strong><ul>${roster.map(p => `<li>${p}</li>`).join('')}</ul>`;
-				draftBoard.appendChild(div);
-			});
-		}
-		function renderRemaining() {
-			remainingList.innerHTML = '';
-			remaining.forEach(p => {
-				const li = document.createElement('li');
-				li.textContent = p;
-				remainingList.appendChild(li);
-			});
-		}
-		function renderDraftProgress() {
-			draftProgress.textContent = `Round ${draftRound + 1}, Team: ${teams[currentTeamIdx]}`;
-		}
-		function renderResultsBoard() {
-			resultsBoard.innerHTML = '';
-			teamRosters.forEach((roster, idx) => {
-				const div = document.createElement('div');
-				div.className = 'team';
-				div.innerHTML = `<strong>${teams[idx]}</strong><ul>${roster.map(p => `<li>${p}</li>`).join('')}</ul>`;
-				resultsBoard.appendChild(div);
-			});
-		}
-
-		// Event Listeners
-		teamForm.onsubmit = e => {
-			e.preventDefault();
-			const name = teamNameInput.value.trim();
-			if (name) {
-				teams.push(name);
-				teamNameInput.value = '';
-				renderTeams();
-			}
-		};
-		personForm.onsubmit = e => {
-			e.preventDefault();
-			const name = personNameInput.value.trim();
-			if (name) {
-				people.push(name);
-				personNameInput.value = '';
-				renderPeople();
-			}
-		};
-		startDraftBtn.onclick = () => {
-			const error = validateSetup();
-			if (error) {
-				setupError.textContent = error;
-				return;
-			}
-			setupError.textContent = '';
-			// Initialize draft
-			draftOrder = shuffle([...people]);
-			teamRosters = Array(teams.length).fill().map(() => []);
-			draftRound = 0;
-			currentTeamIdx = 0;
-			remaining = [...draftOrder];
-			distribution = calculateDistribution(people.length, teams.length);
-			picksMade = 0;
-			renderDraftBoard();
-			renderDraftProgress();
-			renderRemaining();
-			setupPhase.classList.add('hidden');
-			draftPhase.classList.remove('hidden');
-		};
-		nextPickBtn.onclick = () => {
-			draftError.textContent = '';
-			if (remaining.length === 0) return;
-			// Find which team is picking
-			if (teamRosters[currentTeamIdx].length >= distribution[currentTeamIdx]) {
-				// Skip to next team with available slots
-				let found = false;
-				for (let i = 1; i <= teams.length; i++) {
-					const idx = (currentTeamIdx + i) % teams.length;
-					if (teamRosters[idx].length < distribution[idx]) {
-						currentTeamIdx = idx;
-						found = true;
-						break;
-					}
-				}
-				if (!found) return; // All teams full
-			}
-			// Pick random participant
-			const pickIdx = Math.floor(Math.random() * remaining.length);
-			const pick = remaining.splice(pickIdx, 1)[0];
-			teamRosters[currentTeamIdx].push(pick);
-			picksMade++;
-			renderDraftBoard();
-			renderRemaining();
-			// Check if round is complete
-			if (teamRosters.every((roster, idx) => roster.length >= distribution[idx])) {
-				// Draft complete
-				draftPhase.classList.add('hidden');
-				resultsPhase.classList.remove('hidden');
-				renderResultsBoard();
-				return;
-			}
-			// Advance to next team
-			for (let i = 1; i <= teams.length; i++) {
-				const idx = (currentTeamIdx + i) % teams.length;
-				if (teamRosters[idx].length < distribution[idx]) {
-					currentTeamIdx = idx;
-					break;
-				}
-			}
-			// Advance round if all teams have picked
-			if (currentTeamIdx === 0) draftRound++;
-			renderDraftProgress();
-		};
-		restartBtn.onclick = () => {
-			// Reset all state
-			teams = [];
-			people = [];
-			draftOrder = [];
-			teamRosters = [];
-			draftRound = 0;
-			currentTeamIdx = 0;
-			remaining = [];
-			distribution = [];
-			picksMade = 0;
-			renderTeams();
-			renderPeople();
-			setupPhase.classList.remove('hidden');
-			draftPhase.classList.add('hidden');
-			resultsPhase.classList.add('hidden');
-			setupError.textContent = '';
-			draftError.textContent = '';
-		};
-
-		// Initial render
-		renderTeams();
-		renderPeople();
-	</script>
+		<script src="script.js"></script>
 </body>
 </html>
