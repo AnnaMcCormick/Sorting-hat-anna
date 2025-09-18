@@ -202,6 +202,8 @@ function renderResultsBoard() {
     div.innerHTML = `${avatar}<strong>${teams[idx]}</strong><ul>${roster.map(pObj => `<li>${typeof pObj === 'string' ? pObj : pObj.name}${pObj.tag ? ` <span class='tag'>[${pObj.tag}]</span>` : ''}</li>`).join('')}</ul>`;
     resultsBoard.appendChild(div);
   });
+}
+
 // Team color assignment (pastel palette)
 function getTeamColor(idx) {
   const colors = [
@@ -209,7 +211,6 @@ function getTeamColor(idx) {
     '#ea80fc', '#a7ffeb', '#ffff8d', '#ff9e80', '#cfd8dc'
   ];
   return colors[idx % colors.length];
-}
 }
 teamForm.onsubmit = e => {
   e.preventDefault();
